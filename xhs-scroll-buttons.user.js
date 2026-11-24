@@ -1,4 +1,3 @@
-```js
 // ==UserScript==
 // @name         小红书网页版 · 一键回顶/触底 + 首赞速查
 // @namespace    xhs-scroll-buttons
@@ -350,10 +349,12 @@
     if (old) old.remove();
   }
 
-  const noteTitle = (it) => it.display_title || it.title || it.name || '(无标题)';
-  const noteId = (it) => it.note_id || it.id || it.noteId || '';
+  const noteCard = (it) => (it && it.note_card) || it || {};
+  const noteTitle = (it) => { const c = noteCard(it); return c.display_title || c.title || c.name || it.display_title || it.title || it.name || '(无标题)'; };
+  const noteId = (it) => noteCard(it).note_id || noteCard(it).id || it.note_id || it.id || it.noteId || '';
   const noteTime = (it) => {
-    const t = it.liked_time ?? it.timestamp ?? it.time ?? it.create_time;
+    const c = noteCard(it);
+    const t = it.liked_time ?? c.liked_time ?? it.timestamp ?? c.timestamp ?? it.time ?? c.time ?? it.create_time ?? c.create_time;
     if (!t) return '';
     const ms = t > 1e12 ? t : t > 1e9 ? t * 1000 : null;
     return ms ? new Date(ms).toLocaleString('zh-CN') : '';
@@ -429,4 +430,3 @@
     if (link && navigator.clipboard) navigator.clipboard.writeText(link).catch(() => {});
   }
 })();
-```
